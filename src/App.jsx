@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import { Header } from "./components/Header";
 import { Home } from "./components/Home";
+import { Create } from "./components/Create";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
       <Header />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="create" element={<Create />} />
       </Routes>
     </main>
   );
