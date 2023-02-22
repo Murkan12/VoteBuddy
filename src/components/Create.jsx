@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 
 export const Create = () => {
-  const [count, setCount] = useState(1);
   const [options, setOptions] = useState([]);
 
   useEffect(() => {
@@ -15,8 +14,7 @@ export const Create = () => {
   }
 
   function handleAddOption() {
-    const randomKey = Math.floor(Math.random() * 1000);
-    setCount(count + 1);
+    const randomKey = new Date().getTime();
 
     setOptions([...options, { id: randomKey }]);
   }
@@ -26,19 +24,25 @@ export const Create = () => {
       <h1 className="text-5xl mt-14 font-bold drop-shadow-lg bg-orange-500 inline-block p-2 rounded-md">
         Enter up to 9 diffrent options:
       </h1>
-      <div className="bg-slate-800 mt-16 rounded-md w-96">
-        <form className="p-8">
+      <div className="bg-slate-800 mt-16 rounded-md w-96 drop-shadow-lg">
+        <form className="p-8" id="options-form">
           {options &&
-            options.map((comp) => (
+            options.map((comp, index) => (
               <div
                 key={comp.id}
-                className="flex mb-4 space-x-4  justify-center items-center last:mb-0"
+                className="flex mb-4 space-x-4  justify-center items-center last:mb-0 drop-shadow-lg"
               >
                 <>
-                  {/* <label htmlFor="option">{count}.</label> */}
+                  <label
+                    className="text-orange-500 font-semibold"
+                    htmlFor="option"
+                  >
+                    {index + 1}.
+                  </label>
                   <input
                     name="option"
-                    className="bg-gray-200 rounded-md p-1"
+                    className="bg-gray-200 rounded-md p-1 outline-none"
+                    autoComplete="off"
                   ></input>
                   <button
                     onClick={(e) => {
@@ -53,14 +57,29 @@ export const Create = () => {
               </div>
             ))}
         </form>
-        {options.length <= 8 && (
+        <div
+          className={
+            options.length !== 9
+              ? "flex justify-between mb-3 mx-4"
+              : "flex justify-center mb-3 mx-4"
+          }
+        >
+          {options.length <= 8 && (
+            <button
+              onClick={handleAddOption}
+              className="bg-orange-600 rounded-md p-2 font-semibold  drop-shadow-md transition ease-in-out delay-50 duration-200 hover:bg-orange-700 hover:-translate-y-1 hover:scale-110"
+            >
+              Add option
+            </button>
+          )}
           <button
-            onClick={handleAddOption}
-            className="bg-orange-600 rounded-md mb-3 p-2 font-semibold ml-4 drop-shadow-md transition ease-in-out delay-50 duration-200 hover:bg-orange-700 hover:-translate-y-1 hover:scale-110"
+            type="submit"
+            form="options-form"
+            className="bg-orange-600 font-semibold p-2 rounded-md transition ease-in-out duration-200 delay-50 hover:bg-orange-700 hover:-translate-y-1 hover:scale-110"
           >
-            Add option
+            Submit
           </button>
-        )}
+        </div>
       </div>
     </section>
   );
