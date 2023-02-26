@@ -3,8 +3,8 @@ import { Routes, Route } from "react-router-dom";
 import { useState } from "react";
 
 import { Header } from "./components/Header";
-import { Home } from "./components/Home";
-import { Create } from "./components/Create";
+import { Home } from "./pages/Home";
+import { Create } from "./pages/Create";
 
 function App() {
   return (
