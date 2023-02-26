@@ -1,7 +1,7 @@
 import { ContentContainer } from "./ContentContainer";
 import ReactDOM from "react-dom";
 
-export const Modal = ({ onClose, open, isOpen }) => {
+export const Modal = ({ onClose, open, isOpen, children }) => {
   if (!open) return null;
 
   return ReactDOM.createPortal(
@@ -12,8 +12,7 @@ export const Modal = ({ onClose, open, isOpen }) => {
       ></div>
       <div className="z-50 bg-slate-800 rounded-md w-3/5 drop-shadow-lg p-10 fixed top-56 flex flex-col justify-center items-center">
         <p className="text-center font-semibold text-orange-500 drop-shadow-lg">
-          Incorrect number of options! Please enter at least two diffrent
-          options.
+          {children}
         </p>
         <button
           onClick={onClose}

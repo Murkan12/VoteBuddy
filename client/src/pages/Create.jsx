@@ -4,6 +4,9 @@ import { ContentContainer } from "../components/ContentContainer";
 import { Modal } from "../components/Modal";
 
 export const Create = () => {
+  const [modalMssg, setModalMssg] = useState(
+    "Incorrect number of options! Please enter at least two diffrent options."
+  );
   const [options, setOptions] = useState([]);
   const [value, setValue] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -69,9 +72,13 @@ export const Create = () => {
           },
           body: `options=${JSON.stringify(processedOptions)}`,
         })
-          .then((response) => {
+          .then(async (response) => {
             if (!response.ok) {
               throw new Error(`HTTP error ${response.status}`);
+            } else {
+              const joinCode = await response.json();
+              setModalMssg(`Your vote session Join Code is: ${joinCode}`);
+              setIsOpen(true);
             }
           })
           .catch((error) => console.log(error));
@@ -87,10 +94,14 @@ export const Create = () => {
         open={isOpen}
         onClose={() => {
           setIsOpen(false);
-          console.log(isOpen);
+          setModalMssg(
+            "Incorrect number of options! Please enter at least two diffrent options."
+          );
         }}
         isOpen={isOpen}
-      ></Modal>
+      >
+        {modalMssg}
+      </Modal>
       <div className="flex flex-col items-center justify-center">
         <h1 className="text-5xl mt-14 font-bold drop-shadow-lg bg-orange-500 inline-block p-2 rounded-md">
           Enter up to 9 diffrent options:

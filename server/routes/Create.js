@@ -16,11 +16,19 @@ Router.post("/", async (req, res) => {
     options: voteArr,
   });
 
-  await newVote.save();
+  try {
+    await newVote.save();
+
+    const createdVote = await Votes.findOne({ options: voteArr });
+    const joinCode = createdVote.joinCode;
+    res.json(joinCode);
+  } catch (error) {
+    res.send(error.message);
+  }
 });
 
-Router.get("/:id", async (req, res) => {
-  const vote = await Votes.findById(req.params.id);
+Router.get("/:joinCode", async (req, res) => {
+  const vote = await Votes.findOne(req.params.id);
 
   res.send(vote.options);
 });
