@@ -16,9 +16,9 @@ export const Modal = ({ onClose, open, isOpen, children }) => {
         </p>
         <button
           onClick={onClose}
-          className="bg-red-500 p-1.5 w-8 mt-4 rounded-md font-semibold drop-shadow-md transition ease-in-out delay-50 duration-200 hover:bg-red-600 hover:-translate-y-1 hover:scale-110"
+          className="bg-red-500 p-1.5 mt-4 rounded-md font-semibold drop-shadow-md transition ease-in-out delay-50 duration-200 hover:bg-red-600 hover:-translate-y-1 hover:scale-110"
         >
-          OK
+          Close
         </button>
       </div>
     </div>,
