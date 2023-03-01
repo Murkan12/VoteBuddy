@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 
 import { ContentContainer } from "../components/ContentContainer";
 import { Modal } from "../components/Modal";
+import { TitleBox } from "../components/TitleBox";
 
 export const Create = () => {
   const [modalMssg, setModalMssg] = useState(
@@ -11,9 +12,9 @@ export const Create = () => {
   const [value, setValue] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
 
-  useEffect(() => {
-    handleAddOption();
-  }, []);
+  // useEffect(() => {
+  //   handleAddOption();
+  // }, []);
 
   function handleDelete(id) {
     const updatedArr = options.filter((comp) => comp.id !== id);
@@ -103,9 +104,7 @@ export const Create = () => {
         {modalMssg}
       </Modal>
       <div className="flex flex-col items-center justify-center">
-        <h1 className="text-5xl mt-14 font-bold drop-shadow-lg bg-orange-500 inline-block p-2 rounded-md">
-          Enter up to 9 diffrent options:
-        </h1>
+        <TitleBox>Enter up to 9 diffrent options:</TitleBox>
         <ContentContainer>
           {options.length > 0 && (
             <form
