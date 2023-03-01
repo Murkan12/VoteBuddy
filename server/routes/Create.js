@@ -27,10 +27,4 @@ Router.post("/", async (req, res) => {
   }
 });
 
-Router.get("/:joinCode", async (req, res) => {
-  const vote = await Votes.findOne(req.params.id);
-
-  res.send(vote.options);
-});
-
 module.exports = Router;
