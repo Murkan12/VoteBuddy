@@ -9,6 +9,7 @@ export const Home = ({
   isOpen,
   setIsOpen,
   handleFetch,
+  handleNavigate,
 }) => {
   const [code, setCode] = useState("");
 

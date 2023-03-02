@@ -171,7 +171,7 @@ export const Create = () => {
               <button
                 type="submit"
                 form="options-form"
-                className="bg-orange-600 font-semibold p-2 rounded-md transition ease-in-out duration-200 delay-50 hover:bg-orange-700 hover:-translate-y-1 hover:scale-110"
+                className="bg-orange-600 drop-shadow-md font-semibold p-2 rounded-md transition ease-in-out duration-200 delay-50 hover:bg-orange-700 hover:-translate-y-1 hover:scale-110"
               >
                 Submit
               </button>

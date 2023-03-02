@@ -19,4 +19,16 @@ Router.get("/:joinCode", async (req, res) => {
   }
 });
 
+Router.patch("/:joinCode", async (req, res) => {
+  console.log(req.body.option);
+  const option = req.body.option;
+
+  await Votes.findOneAndUpdate(
+    {
+      "options.option": String(req.body.option),
+    },
+    { $inc: { "options.$.votesNum": 1 } }
+  );
+});
+
 module.exports = Router;
