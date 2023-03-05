@@ -1,7 +1,7 @@
 import { ContentContainer } from "./ContentContainer";
 import ReactDOM from "react-dom";
 
-export const Modal = ({ onClose, open, isOpen, children }) => {
+export const Modal = ({ onClose, open, children, joinButton }) => {
   if (!open) return null;
 
   return ReactDOM.createPortal(
@@ -14,12 +14,15 @@ export const Modal = ({ onClose, open, isOpen, children }) => {
         <p className="text-center font-semibold text-orange-500 drop-shadow-lg">
           {children}
         </p>
-        <button
-          onClick={onClose}
-          className="bg-red-500 p-1.5 mt-4 rounded-md font-semibold drop-shadow-md transition ease-in-out delay-50 duration-200 hover:bg-red-600 hover:-translate-y-1 hover:scale-110"
-        >
-          Close
-        </button>
+        <div className="flex space-x-5">
+          {joinButton}
+          <button
+            onClick={onClose}
+            className="bg-red-500 p-1.5 mt-4 rounded-md font-semibold drop-shadow-md transition ease-in-out delay-50 duration-200 hover:bg-red-600 hover:-translate-y-1 hover:scale-110"
+          >
+            Close
+          </button>
+        </div>
       </div>
     </div>,
     document.getElementById("portal")

@@ -4,23 +4,23 @@ import { ContentContainer } from "../components/ContentContainer";
 import { Modal } from "../components/Modal";
 import { TitleBox } from "../components/TitleBox";
 
-export const Create = () => {
+export const Create = ({ title, setTitle, handleNavigate }) => {
   const [modalMssg, setModalMssg] = useState(
     "Incorrect number of options! Please enter at least two diffrent options."
   );
   const [options, setOptions] = useState([]);
   const [value, setValue] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [joinButton, setJoinButton] = useState(null);
 
-  // useEffect(() => {
-  //   handleAddOption();
-  // }, []);
+  useEffect(() => {
+    setTitle("Vote title");
+  }, []);
 
   function handleDelete(id) {
     const updatedArr = options.filter((comp) => comp.id !== id);
     const updatedValue = value.filter((element) => element.id !== id);
 
-    console.log(updatedArr);
     setValue(updatedValue);
     setOptions(updatedArr);
   }
@@ -30,16 +30,12 @@ export const Create = () => {
 
     setValue([...value, { id: randomKey, option: "" }]);
     setOptions([...options, { id: randomKey }]);
-
-    console.log(value);
   }
 
   function handleSubmit(event) {
     event.preventDefault();
 
     const optionsSet = new Set();
-
-    console.log(value);
 
     if (!value.every((element) => element.option === "")) {
       const optionsArr = value.map(({ option }) => {
@@ -48,20 +44,19 @@ export const Create = () => {
         }
       });
 
-      console.log(optionsArr);
-
       optionsArr.forEach((element) => {
         if (element !== undefined) optionsSet.add(element);
       });
 
       if (optionsSet.size === 1) {
         setIsOpen(true);
+      } else if (title === "") {
+        setModalMssg("Please enter a title.");
+        setIsOpen(true);
       } else {
         const processedOptions = [];
 
         optionsSet.forEach((element) => processedOptions.push(element));
-
-        console.log(processedOptions);
 
         fetch("http://localhost:3000/create", {
           method: "POST",
@@ -71,7 +66,9 @@ export const Create = () => {
           headers: {
             "Content-type": "application/x-www-form-urlencoded",
           },
-          body: `options=${JSON.stringify(processedOptions)}`,
+          body: `options=${JSON.stringify(
+            processedOptions
+          )}&title=${JSON.stringify(title)}`,
         })
           .then(async (response) => {
             if (!response.ok) {
@@ -79,10 +76,18 @@ export const Create = () => {
             } else {
               const joinCode = await response.json();
               setModalMssg(`Your vote session Join Code is: ${joinCode}`);
+              setJoinButton(
+                <button
+                  onClick={() => handleNavigate(`vote/${joinCode}`)}
+                  className="bg-green-500 p-1.5 mt-4 rounded-md font-semibold drop-shadow-md transition ease-in-out delay-50 duration-200 hover:bg-green-600 hover:-translate-y-1 hover:scale-110"
+                >
+                  Join Vote
+                </button>
+              );
               setIsOpen(true);
             }
           })
-          .catch((error) => console.log(error));
+          .catch((error) => console.log(error.messege));
       }
     } else {
       setIsOpen(true);
@@ -100,17 +105,30 @@ export const Create = () => {
           );
         }}
         isOpen={isOpen}
+        joinButton={joinButton}
       >
         {modalMssg}
       </Modal>
       <div className="flex flex-col items-center justify-center">
         <TitleBox>Enter up to 9 diffrent options:</TitleBox>
         <ContentContainer>
+          <div className="flex mb-4 space-x-4 pt-4  justify-center items-center">
+            <label htmlFor="title" className="text-orange-500 font-semibold">
+              Enter Vote name:
+            </label>
+            <input
+              name="title"
+              type="text"
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              className="bg-gray-200 rounded-md p-1 outline-none "
+            ></input>
+          </div>
           {options.length > 0 && (
             <form
               action="http://localhost:3000/create"
               method="POST"
-              className="p-8"
+              className="pb-8 pr-8 pl-8 pt-2"
               id="options-form"
               onSubmit={handleSubmit}
             >

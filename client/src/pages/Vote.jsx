@@ -1,17 +1,22 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
+import { TitleBox } from "../components/TitleBox";
 import { ContentContainer } from "../components/ContentContainer";
 import { Modal } from "../components/Modal";
 
 export const Vote = ({
   voteOptions,
-  setVoteOptions,
   handleFetch,
   isOpen,
   setIsOpen,
+  handleNavigate,
+  title,
 }) => {
   const [value, setValue] = useState("");
+  const [modalMsg, setModalMsg] = useState(
+    "Couldn't fetch data from server! Please try again!"
+  );
 
   const params = useParams();
   const joinCode = params.joinCode;
@@ -20,21 +25,28 @@ export const Vote = ({
     handleFetch(joinCode);
   }, []);
 
-  function handleSubmit() {
-    fetch(`http://localhost:3000/vote/${joinCode}`, {
-      method: "PATCH",
+  async function handleSubmit() {
+    const response = await fetch(`http://localhost:3000/vote/${joinCode}`, {
       headers: {
-        "Content-type": "application/json",
+        "Content-type": "application/x-www-form-urlencoded",
       },
-      body: `option=${JSON.stringify(value)}`,
+      method: "PATCH",
+      body: `option=${value}`,
     });
-    console.log(value);
+
+    if (!response.ok) {
+      setModalMsg("Server error: vote could not be saved. Please try again.");
+      setIsOpen(true);
+    } else {
+      sessionStorage.setItem(`${joinCode}`, "voteCast");
+      handleNavigate(`results/${joinCode}`);
+    }
   }
 
   return (
     <section>
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
-        Couldn't fetch data from server! Please try again!
+        {modalMsg}
       </Modal>
       <form
         className="flex flex-col items-center"
@@ -43,6 +55,7 @@ export const Vote = ({
           handleSubmit();
         }}
       >
+        <TitleBox>{title}</TitleBox>
         <ContentContainer>
           {voteOptions.map((element, index) => {
             return (

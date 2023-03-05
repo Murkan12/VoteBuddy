@@ -6,10 +6,14 @@ import { Header } from "./components/Header";
 import { Home } from "./pages/Home";
 import { Create } from "./pages/Create";
 import { Vote } from "./pages/Vote";
+import { Results } from "./pages/Results";
 
 function App() {
   const [voteOptions, setVoteOptions] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [title, setTitle] = useState("Vote title");
+  const [percentages, setPercentages] = useState([]);
+
   const navigate = useNavigate();
 
   function handleNavigate(path) {
@@ -19,18 +23,25 @@ function App() {
   async function handleFetch(code) {
     const response = await fetch(`http://localhost:3000/vote/${code}`);
     const result = await response.json();
-    console.log(result);
+    const isValid = sessionStorage.getItem(`${code}`) || true;
 
-    if (result.ok) {
+    if (result.ok && isValid !== "voteCast") {
       setVoteOptions(result.options);
+      setPercentages(result.percentages);
+      setTitle(result.title);
       handleNavigate(`/vote/${result.joinCode}`);
+    } else if (result.ok && isValid === "voteCast") {
+      setVoteOptions(result.options);
+      setTitle(result.title);
+      setPercentages(result.percentages);
+      handleNavigate(`/results/${result.joinCode}`);
     } else {
       setIsOpen(true);
     }
   }
 
   return (
-    <main className="h-screen w-screen bg-slate-500">
+    <main>
       <Header />
       <Routes>
         <Route
@@ -46,7 +57,16 @@ function App() {
             />
           }
         />
-        <Route path="create" element={<Create />} />
+        <Route
+          path="create"
+          element={
+            <Create
+              title={title}
+              setTitle={setTitle}
+              handleNavigate={handleNavigate}
+            />
+          }
+        />
         <Route
           path="vote/:joinCode"
           element={
@@ -57,9 +77,22 @@ function App() {
               setIsOpen={setIsOpen}
               handleFetch={handleFetch}
               handleNavigate={handleNavigate}
+              title={title}
             />
           }
         />
+        <Route
+          path="results/:joinCode"
+          element={
+            <Results
+              voteOptions={voteOptions}
+              handleNavigate={handleNavigate}
+              setVoteOptions={setVoteOptions}
+              handleFetch={handleFetch}
+              percentages={percentages}
+            />
+          }
+        ></Route>
       </Routes>
     </main>
   );
