@@ -4,10 +4,16 @@ import { ContentContainer } from "../components/ContentContainer";
 import { Modal } from "../components/Modal";
 import { TitleBox } from "../components/TitleBox";
 
-export const Create = ({ title, setTitle, handleNavigate }) => {
-  const [modalMssg, setModalMssg] = useState(
-    "Incorrect number of options! Please enter at least two diffrent options."
-  );
+export const Create = ({
+  title,
+  setTitle,
+  handleNavigate,
+  modalMsg,
+  setModalMsg,
+}) => {
+  // const [modalMssg, setModalMssg] = useState(
+  //   "Incorrect number of options! Please enter at least two diffrent options."
+  // );
   const [options, setOptions] = useState([]);
   const [value, setValue] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -32,7 +38,7 @@ export const Create = ({ title, setTitle, handleNavigate }) => {
     setOptions([...options, { id: randomKey }]);
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
     const optionsSet = new Set();
@@ -48,48 +54,63 @@ export const Create = ({ title, setTitle, handleNavigate }) => {
         if (element !== undefined) optionsSet.add(element);
       });
 
+      console.log(optionsSet);
+
       if (optionsSet.size === 1) {
+        setModalMsg(
+          "Incorrect number of options! Please enter at least two diffrent options."
+        );
         setIsOpen(true);
       } else if (title === "") {
-        setModalMssg("Please enter a title.");
+        setModalMsg("Please enter a title.");
         setIsOpen(true);
       } else {
         const processedOptions = [];
 
         optionsSet.forEach((element) => processedOptions.push(element));
 
-        fetch("http://localhost:3000/create", {
-          method: "POST",
-          mode: "cors",
-          cache: "default",
-          credentials: "same-origin",
-          headers: {
-            "Content-type": "application/x-www-form-urlencoded",
-          },
-          body: `options=${JSON.stringify(
-            processedOptions
-          )}&title=${JSON.stringify(title)}`,
-        })
-          .then(async (response) => {
-            if (!response.ok) {
-              throw new Error(`HTTP error ${response.status}`);
-            } else {
-              const joinCode = await response.json();
-              setModalMssg(`Your vote session Join Code is: ${joinCode}`);
-              setJoinButton(
-                <button
-                  onClick={() => handleNavigate(`vote/${joinCode}`)}
-                  className="bg-green-500 p-1.5 mt-4 rounded-md font-semibold drop-shadow-md transition ease-in-out delay-50 duration-200 hover:bg-green-600 hover:-translate-y-1 hover:scale-110"
-                >
-                  Join Vote
-                </button>
-              );
-              setIsOpen(true);
-            }
-          })
-          .catch((error) => console.log(error.messege));
+        try {
+          const response = await fetch("http://localhost:3000/create", {
+            method: "POST",
+            mode: "cors",
+            cache: "default",
+            credentials: "same-origin",
+            headers: {
+              "Content-type": "application/x-www-form-urlencoded",
+            },
+            body: `options=${JSON.stringify(
+              processedOptions
+            )}&title=${JSON.stringify(title)}`,
+          });
+          const result = await response.json();
+
+          if (!result.ok) {
+            throw new Error(result.error);
+          } else {
+            const joinCode = await result.joinCode;
+            const expireTime = result.expireTime;
+            setModalMsg(
+              `Your vote session Join Code is: ${joinCode}. It will expire at ${expireTime}`
+            );
+            setJoinButton(
+              <button
+                onClick={() => handleNavigate(`vote/${joinCode}`)}
+                className="bg-green-500 p-1.5 mt-4 rounded-md font-semibold drop-shadow-md transition ease-in-out delay-50 duration-200 hover:bg-green-600 hover:-translate-y-1 hover:scale-110"
+              >
+                Join Vote
+              </button>
+            );
+            setIsOpen(true);
+          }
+        } catch (error) {
+          setModalMsg(`New error: ${error}`);
+          setIsOpen(true);
+        }
       }
     } else {
+      setModalMsg(
+        "Incorrect number of options! Please enter at least two diffrent options."
+      );
       setIsOpen(true);
     }
   }
@@ -100,14 +121,14 @@ export const Create = ({ title, setTitle, handleNavigate }) => {
         open={isOpen}
         onClose={() => {
           setIsOpen(false);
-          setModalMssg(
-            "Incorrect number of options! Please enter at least two diffrent options."
-          );
+          // setModalMsg(
+          //   "Incorrect number of options! Please enter at least two diffrent options."
+          // );
         }}
         isOpen={isOpen}
         joinButton={joinButton}
       >
-        {modalMssg}
+        {modalMsg}
       </Modal>
       <div className="flex flex-col items-center justify-center">
         <TitleBox>Enter up to 9 diffrent options:</TitleBox>

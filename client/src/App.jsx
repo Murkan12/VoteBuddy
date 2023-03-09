@@ -13,6 +13,8 @@ function App() {
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState("Vote title");
   const [percentages, setPercentages] = useState([]);
+  const [modalMsg, setModalMsg] = useState("");
+  const [expireTime, setExpireTime] = useState("");
 
   const navigate = useNavigate();
 
@@ -21,21 +23,28 @@ function App() {
   }
 
   async function handleFetch(code) {
-    const response = await fetch(`http://localhost:3000/vote/${code}`);
-    const result = await response.json();
-    const isValid = sessionStorage.getItem(`${code}`) || true;
+    try {
+      const response = await fetch(`http://localhost:3000/vote/${code}`);
+      const result = await response.json();
+      const isValid = sessionStorage.getItem(`${code}`) || true;
 
-    if (result.ok && isValid !== "voteCast") {
-      setVoteOptions(result.options);
-      setPercentages(result.percentages);
-      setTitle(result.title);
-      handleNavigate(`/vote/${result.joinCode}`);
-    } else if (result.ok && isValid === "voteCast") {
-      setVoteOptions(result.options);
-      setTitle(result.title);
-      setPercentages(result.percentages);
-      handleNavigate(`/results/${result.joinCode}`);
-    } else {
+      if (result.ok && isValid !== "voteCast") {
+        setVoteOptions(result.options);
+        setPercentages(result.percentages);
+        setTitle(result.title);
+        handleNavigate(`/vote/${result.joinCode}`);
+      } else if (result.ok && isValid === "voteCast") {
+        setVoteOptions(result.options);
+        setTitle(result.title);
+        setPercentages(result.percentages);
+        setExpireTime(result.expireTime);
+        handleNavigate(`/results/${result.joinCode}`);
+      } else {
+        setModalMsg("Vote not found!");
+        setIsOpen(true);
+      }
+    } catch (error) {
+      setModalMsg(`Server error: ${error.message}`);
       setIsOpen(true);
     }
   }
@@ -48,8 +57,8 @@ function App() {
           path="/"
           element={
             <Home
-              voteOptions={voteOptions}
-              setVoteOptions={setVoteOptions}
+              modalMsg={modalMsg}
+              setModalMsg={setModalMsg}
               isOpen={isOpen}
               setIsOpen={setIsOpen}
               handleFetch={handleFetch}
@@ -64,6 +73,10 @@ function App() {
               title={title}
               setTitle={setTitle}
               handleNavigate={handleNavigate}
+              modalMsg={modalMsg}
+              setModalMsg={setModalMsg}
+              setExpireTime={setExpireTime}
+              expireTime={expireTime}
             />
           }
         />
@@ -85,11 +98,17 @@ function App() {
           path="results/:joinCode"
           element={
             <Results
+              modalMsg={modalMsg}
+              setIsOpen={setIsOpen}
+              isOpen={isOpen}
               voteOptions={voteOptions}
               handleNavigate={handleNavigate}
               setVoteOptions={setVoteOptions}
               handleFetch={handleFetch}
               percentages={percentages}
+              title={title}
+              expireTime={expireTime}
+              setExpireTime={setExpireTime}
             />
           }
         ></Route>

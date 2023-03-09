@@ -11,7 +11,7 @@ export const Modal = ({ onClose, open, children, joinButton }) => {
            fixed top-0 left-0 right-0 bottom-0 z-40`}
       ></div>
       <div className="z-50 bg-slate-800 rounded-md w-3/5 drop-shadow-lg p-10 fixed top-56 flex flex-col justify-center items-center">
-        <p className="text-center font-semibold text-orange-500 drop-shadow-lg">
+        <p className="text-center text-xl font-semibold text-orange-500 drop-shadow-lg">
           {children}
         </p>
         <div className="flex space-x-5">

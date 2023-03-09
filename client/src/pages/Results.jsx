@@ -1,11 +1,28 @@
 import { ContentContainer } from "../components/ContentContainer";
+import { Modal } from "../components/Modal";
+import { TitleBox } from "../components/TitleBox";
 
 import { io } from "socket.io-client";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useCountdown } from "../hooks/useCountdown";
+import { useFetchTIme } from "../hooks/useFetchTIme";
 
-export const Results = ({ voteOptions, handleFetch, percentages }) => {
+export const Results = ({
+  voteOptions,
+  handleFetch,
+  percentages,
+  isOpen,
+  setIsOpen,
+  modalMsg,
+  title,
+  handleNavigate,
+  expireTime,
+  setExpireTime,
+}) => {
   const { joinCode } = useParams();
+
+  const [minutes, seconds] = useCountdown(expireTime);
 
   useEffect(() => {
     handleFetch(joinCode);
@@ -17,32 +34,35 @@ export const Results = ({ voteOptions, handleFetch, percentages }) => {
       console.log(msg);
     });
   }, []);
-  function countPercentage() {
-    const numOfVotes = voteOptions.reduce((acc, curr) => {
-      return acc + curr.votesNum;
-    }, 0);
-    return voteOptions.map((element) => {
-      return Math.round((element.votesNum / numOfVotes) * 100);
-    });
-  }
+
   return (
     <section>
-      <div className="flex justify-center">
+      <Modal
+        open={isOpen}
+        onClose={() => {
+          setIsOpen(false);
+          handleNavigate("/");
+        }}
+      >
+        {modalMsg}
+      </Modal>
+      <div className="flex flex-col items-center">
+        <TitleBox>{title}</TitleBox>
         <ContentContainer>
           <div className="flex flex-col justify-center p-4">
             {voteOptions.map((element, index) => {
               return (
                 <div key={index}>
-                  <div className="flex justify-between py-2">
+                  <div className="flex justify-between py-2 bg-gray-600 rounded-md">
                     <label
                       htmlFor="option"
-                      className=" drop-shadow-md font-semibold text-orange-500"
+                      className=" drop-shadow-md font-semibold text-orange-500 p-1"
                     >
-                      {element.option}
+                      {`${index + 1}. ${element.option}`}
                     </label>
                     <span
                       name="option"
-                      className=" drop-shadow-md text-slate-100 font-semibold"
+                      className=" drop-shadow-md text-slate-100 font-semibold p-1"
                     >
                       {element.votesNum}
                     </span>
@@ -65,6 +85,11 @@ export const Results = ({ voteOptions, handleFetch, percentages }) => {
             })}
           </div>
         </ContentContainer>
+        {Boolean(minutes) && (
+          <div className="bg-red-500 font-semibold p-2 rounded-md mt-[-30px]">
+            {`Expires at: { ${minutes}:${seconds} }`}
+          </div>
+        )}
       </div>
     </section>
   );

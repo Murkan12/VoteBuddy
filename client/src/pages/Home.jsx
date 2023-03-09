@@ -4,8 +4,8 @@ import { Modal } from "../components/Modal";
 import { TitleBox } from "../components/TitleBox";
 
 export const Home = ({
-  voteOptions,
-  setVoteOptions,
+  modalMsg,
+  setModalMsg,
   isOpen,
   setIsOpen,
   handleFetch,
@@ -16,7 +16,7 @@ export const Home = ({
   return (
     <section>
       <Modal open={isOpen} onClose={() => setIsOpen(false)}>
-        Vote session not found. Please check if your input was correct.
+        {modalMsg}
       </Modal>
       <div className="flex flex-col items-center">
         <TitleBox>Create or Join a voting session:</TitleBox>
@@ -26,6 +26,9 @@ export const Home = ({
               onSubmit={(event) => {
                 event.preventDefault();
                 handleFetch(code);
+                setModalMsg(
+                  "Vote session not found. Please check if your input was correct."
+                );
               }}
               name="form"
             >

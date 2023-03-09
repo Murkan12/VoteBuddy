@@ -33,8 +33,9 @@ export const Vote = ({
       method: "PATCH",
       body: `option=${value}`,
     });
+    const result = await response.json();
 
-    if (!response.ok) {
+    if (!result.ok) {
       setModalMsg("Server error: vote could not be saved. Please try again.");
       setIsOpen(true);
     } else {
@@ -74,7 +75,7 @@ export const Vote = ({
                   htmlFor={`option`}
                   className="font-semibold text-orange-500"
                 >
-                  {element.option}
+                  {`${index + 1}. ${element.option}`}
                 </label>
               </div>
             );
