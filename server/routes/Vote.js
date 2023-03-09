@@ -25,16 +25,17 @@ Router.get("/:joinCode", async (req, res) => {
   try {
     if (vote && vote.options) {
       const voteOptions = vote.options;
-      console.log(voteOptions);
+      // console.log(voteOptions);
       const numOfVotes = voteOptions.reduce((acc, curr) => {
         return acc + curr.votesNum;
       }, 0);
-      console.log(numOfVotes);
+      // console.log(numOfVotes);
       const percentages = voteOptions.map((element) =>
         Math.round((element.votesNum / numOfVotes) * 100)
       );
 
-      console.log(percentages);
+      vote.createdAt.setMinutes(vote.createdAt.getMinutes() + 30);
+      const time = vote.createdAt;
 
       res.send({
         ok: true,
@@ -42,6 +43,7 @@ Router.get("/:joinCode", async (req, res) => {
         options: vote.options,
         joinCode: req.params.joinCode,
         percentages: percentages,
+        expireTime: time,
       });
     } else {
       res.send({ ok: false });
@@ -55,6 +57,8 @@ Router.patch("/:joinCode", async (req, res) => {
   const option = req.body.option;
   const joinCode = req.params.joinCode;
 
+  console.log(option);
+
   try {
     await Votes.findOneAndUpdate(
       {
@@ -64,10 +68,10 @@ Router.patch("/:joinCode", async (req, res) => {
     );
 
     io.to(joinCode).emit("vote-updated", "updated");
-    res.send(true);
+    res.send({ ok: true });
   } catch (error) {
     console.log(error.message);
-    res.send(false);
+    res.send({ ok: false });
   }
 });
 
