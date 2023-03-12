@@ -15,7 +15,6 @@ mongoose.set("strictQuery", false);
 
 const createRouter = require("./routes/Create");
 const voteRouter = require("./routes/Vote");
-const resultsRouter = require("./routes/Results");
 
 mongoose.connect(process.env.DATABASE_URL);
 
@@ -30,7 +29,6 @@ app.use(bodyParser.json());
 
 app.use("/create", createRouter);
 app.use("/vote", voteRouter);
-app.use("/results", resultsRouter);
 
 app.listen(PORT, () => {
   console.log("Connected to server...");

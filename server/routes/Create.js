@@ -3,7 +3,7 @@ const Router = express.Router();
 const Votes = require("../models/Vote");
 
 Router.post("/", async (req, res) => {
-  await Votes.deleteMany();
+  // await Votes.deleteMany();
 
   const optionsArr = JSON.parse(req.body.options);
   const title = JSON.parse(req.body.title);
@@ -24,10 +24,13 @@ Router.post("/", async (req, res) => {
     const createdVote = await Votes.findOne({ options: voteArr });
     const joinCode = createdVote.joinCode;
 
-    createdVote.createdAt.setMinutes(createdVote.createdAt.getMinutes() + 30);
-    const time = createdVote.createdAt.toLocaleTimeString();
+    const date = new Date(createdVote.createdAt);
 
-    res.json({ ok: true, joinCode: joinCode, expireTime: time });
+    date.setTime(createdVote.createdAt.getTime() + 60000);
+
+    const time = date.toLocaleTimeString();
+
+    res.json({ ok: true, joinCode: joinCode, time: time });
   } catch (error) {
     res.json({ ok: false, error: error.message });
   }
