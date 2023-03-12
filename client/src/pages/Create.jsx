@@ -11,9 +11,6 @@ export const Create = ({
   modalMsg,
   setModalMsg,
 }) => {
-  // const [modalMssg, setModalMssg] = useState(
-  //   "Incorrect number of options! Please enter at least two diffrent options."
-  // );
   const [options, setOptions] = useState([]);
   const [value, setValue] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
@@ -88,9 +85,14 @@ export const Create = ({
             throw new Error(result.error);
           } else {
             const joinCode = await result.joinCode;
-            const expireTime = result.expireTime;
+            console.log(result.time);
+            const expireTime = result.time;
             setModalMsg(
-              `Your vote session Join Code is: ${joinCode}. It will expire at ${expireTime}`
+              `Your vote session Join Code is: ${(
+                <span className="text-green-500 bg-gray-600 p-1 rounded-md">
+                  {joinCode}
+                </span>
+              )}. It will expire at ${expireTime}`
             );
             setJoinButton(
               <button
@@ -121,9 +123,6 @@ export const Create = ({
         open={isOpen}
         onClose={() => {
           setIsOpen(false);
-          // setModalMsg(
-          //   "Incorrect number of options! Please enter at least two diffrent options."
-          // );
         }}
         isOpen={isOpen}
         joinButton={joinButton}
@@ -133,7 +132,7 @@ export const Create = ({
       <div className="flex flex-col items-center justify-center">
         <TitleBox>Enter up to 9 diffrent options:</TitleBox>
         <ContentContainer>
-          <div className="flex mb-4 space-x-4 pt-4  justify-center items-center">
+          <div className="flex mb-4 space-x-4 pt-4 px-4  justify-center items-center">
             <label htmlFor="title" className="text-orange-500 font-semibold">
               Enter Vote name:
             </label>

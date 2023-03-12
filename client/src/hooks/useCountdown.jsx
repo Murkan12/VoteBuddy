@@ -1,23 +1,28 @@
 import { useEffect, useState } from "react";
 
-export const useCountdown = (date) => {
-  const time = new Date(date).getTime();
+export const useCountdown = (time, secToExp) => {
+  const date = new Date(time);
+  const expireAt = date.getTime() + secToExp;
+  date.setTime(expireAt);
 
-  const [countdown, setCountdown] = useState(time - new Date().getTime());
+  const expireTime = new Date(date).getTime();
+
+  const [countdown, setCountdown] = useState(expireTime - new Date().getTime());
 
   useEffect(() => {
     const interval = setInterval(
-      () => setCountdown(time - new Date().getTime()),
+      () => setCountdown(expireTime - new Date().getTime()),
       1000
     );
 
     return () => clearInterval(interval);
-  }, [time]);
+  }, [expireTime]);
 
   function getReturnValues(countdown) {
     const minutes = Math.floor((countdown % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((countdown % (1000 * 60)) / 1000);
-    return [minutes, seconds];
+    if (minutes >= 0 && seconds >= 0) return [minutes, seconds];
+    else return [null, null];
   }
 
   return getReturnValues(countdown);

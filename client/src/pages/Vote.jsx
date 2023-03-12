@@ -14,9 +14,7 @@ export const Vote = ({
   title,
 }) => {
   const [value, setValue] = useState("");
-  const [modalMsg, setModalMsg] = useState(
-    "Couldn't fetch data from server! Please try again!"
-  );
+  const [modalMsg, setModalMsg] = useState("");
 
   const params = useParams();
   const joinCode = params.joinCode;
@@ -28,25 +26,30 @@ export const Vote = ({
   async function handleSubmit() {
     const response = await fetch(`http://localhost:3000/vote/${joinCode}`, {
       headers: {
-        "Content-type": "application/x-www-form-urlencoded",
+        "Content-type": "application/json",
       },
       method: "PATCH",
-      body: `option=${value}`,
+      body: JSON.stringify({ json: { option: value, joinCode: joinCode } }),
     });
     const result = await response.json();
 
     if (!result.ok) {
-      setModalMsg("Server error: vote could not be saved. Please try again.");
+      setModalMsg(result.error || "Server error: vote could not be saved.");
       setIsOpen(true);
     } else {
       sessionStorage.setItem(`${joinCode}`, "voteCast");
       handleNavigate(`results/${joinCode}`);
     }
   }
-
   return (
     <section>
-      <Modal open={isOpen} onClose={() => setIsOpen(false)}>
+      <Modal
+        open={isOpen}
+        onClose={() => {
+          setIsOpen(false);
+          handleNavigate("/");
+        }}
+      >
         {modalMsg}
       </Modal>
       <form
@@ -60,7 +63,7 @@ export const Vote = ({
         <ContentContainer>
           {voteOptions.map((element, index) => {
             return (
-              <div className="p-4" key={index}>
+              <div className="p-4 py-1 my-2 bg-gray-600" key={index}>
                 <input
                   name={`option`}
                   type="radio"
@@ -68,7 +71,6 @@ export const Vote = ({
                   value={element.option}
                   onChange={(event) => {
                     setValue(event.target.value);
-                    console.log(value);
                   }}
                 ></input>
                 <label
@@ -83,7 +85,8 @@ export const Vote = ({
           <div className="flex justify-center mb-4">
             <button
               type="submit"
-              className="bg-orange-600 rounded-md p-2 font-semibold drop-shadow-md transition ease-in-out duration-200 delay-50 hover:bg-orange-700 hover:-translate-y-1 hover:scale-110"
+              disabled={value ? false : true}
+              className="bg-orange-600 rounded-md p-2 font-semibold drop-shadow-md transition ease-in-out duration-200 delay-50 hover:bg-orange-700 enabled:hover:-translate-y-1 enabled:hover:scale-110 disabled:bg-gray-500"
             >
               Post Vote
             </button>

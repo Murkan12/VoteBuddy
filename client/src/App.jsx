@@ -1,6 +1,6 @@
 import { Routes, Route, useNavigate } from "react-router-dom";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { Header } from "./components/Header";
 import { Home } from "./pages/Home";
@@ -12,14 +12,29 @@ function App() {
   const [voteOptions, setVoteOptions] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [title, setTitle] = useState("Vote title");
-  const [percentages, setPercentages] = useState([]);
   const [modalMsg, setModalMsg] = useState("");
-  const [expireTime, setExpireTime] = useState("");
+  const [time, setTime] = useState("");
+  const milSecRef = useRef(60000);
 
   const navigate = useNavigate();
 
   function handleNavigate(path) {
     return navigate(path);
+  }
+
+  async function handleExpire(joinCode) {
+    const response = await fetch(
+      `http://localhost:3000/vote/expire/${joinCode}`
+    );
+    const result = await response.json();
+
+    if (result.ok) {
+      setModalMsg("Vote session expired!");
+      setIsOpen(true);
+    } else {
+      setModalMsg("New error: " + result.error);
+      setIsOpen(true);
+    }
   }
 
   async function handleFetch(code) {
@@ -28,17 +43,24 @@ function App() {
       const result = await response.json();
       const isValid = sessionStorage.getItem(`${code}`) || true;
 
-      if (result.ok && isValid !== "voteCast") {
+      const time =
+        new Date(result.time).getTime() +
+        milSecRef.current -
+        new Date().getTime();
+
+      console.log(time);
+
+      if (result.ok && isValid !== "voteCast" && time > 0) {
         setVoteOptions(result.options);
-        setPercentages(result.percentages);
         setTitle(result.title);
         handleNavigate(`/vote/${result.joinCode}`);
-      } else if (result.ok && isValid === "voteCast") {
+      } else if (result.ok && isValid === "voteCast" && time > 0) {
         setVoteOptions(result.options);
         setTitle(result.title);
-        setPercentages(result.percentages);
-        setExpireTime(result.expireTime);
+        setTime(result.time);
         handleNavigate(`/results/${result.joinCode}`);
+      } else if (result.ok && time <= 0) {
+        handleExpire(result.joinCode);
       } else {
         setModalMsg("Vote not found!");
         setIsOpen(true);
@@ -75,8 +97,6 @@ function App() {
               handleNavigate={handleNavigate}
               modalMsg={modalMsg}
               setModalMsg={setModalMsg}
-              setExpireTime={setExpireTime}
-              expireTime={expireTime}
             />
           }
         />
@@ -105,10 +125,12 @@ function App() {
               handleNavigate={handleNavigate}
               setVoteOptions={setVoteOptions}
               handleFetch={handleFetch}
-              percentages={percentages}
               title={title}
-              expireTime={expireTime}
-              setExpireTime={setExpireTime}
+              time={time}
+              setTime={setTime}
+              setModalMsg={setModalMsg}
+              handleExpire={handleExpire}
+              milSecRef={milSecRef}
             />
           }
         ></Route>
