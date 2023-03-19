@@ -16,6 +16,7 @@ export const Vote = ({
   title,
   modalMsg,
   setModalMsg,
+  milSecRef,
 }) => {
   const [value, setValue] = useState("");
   const [selected, setSelected] = useState(null);
@@ -43,7 +44,7 @@ export const Vote = ({
     } else {
       Cookies.set(joinCode, "token", {
         path: "/",
-        expires: new Date(new Date().getTime() + 30 * 60 * 1000),
+        expires: new Date(new Date().getTime() + milSecRef.current),
       });
       handleNavigate(`results/${joinCode}`);
     }

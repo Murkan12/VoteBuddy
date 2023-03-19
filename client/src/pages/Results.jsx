@@ -60,7 +60,26 @@ export const Results = ({
   }
 
   function handleColors(index) {
-    return `flex justify-between py-1 my-2 bg-[${chartTheme[index]}] rounded-md`;
+    switch (index) {
+      case 0:
+        return `flex justify-between py-1 my-2 bg-[#FFB84C] rounded-md`;
+      case 1:
+        return `flex justify-between py-1 my-2 bg-[#F16767] rounded-md`;
+      case 2:
+        return `flex justify-between py-1 my-2 bg-[#A459D1] rounded-md`;
+      case 3:
+        return `flex justify-between py-1 my-2 bg-[#5D3891] rounded-md`;
+      case 4:
+        return `flex justify-between py-1 my-2 bg-[#F99417] rounded-md`;
+      case 5:
+        return `flex justify-between py-1 my-2 bg-[#7DB9B6] rounded-md`;
+      case 6:
+        return `flex justify-between py-1 my-2 bg-[#E96479] rounded-md`;
+      case 7:
+        return `flex justify-between py-1 my-2 bg-[#146C94] rounded-md`;
+      case 8:
+        return `flex justify-between py-1 my-2 bg-[#42855B] rounded-md`;
+    }
   }
 
   const [minutes, seconds] = useCountdown(time, milSecRef.current);

@@ -46,8 +46,6 @@ Router.patch("/:joinCode", checkExpire, async (req, res) => {
   const option = req.body.option;
   const joinCode = req.params.joinCode;
 
-  console.log(req.time);
-
   try {
     await Votes.findOneAndUpdate(
       {

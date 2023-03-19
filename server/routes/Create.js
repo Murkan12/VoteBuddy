@@ -25,13 +25,9 @@ Router.post("/", async (req, res) => {
   try {
     await newVote.save();
 
-    const date = new Date(newVote.createdAt);
+    const expireDate = new Date(newVote.createdAt);
 
-    date.setTime(newVote.createdAt.getTime() + 60000);
-
-    const time = date.toLocaleTimeString();
-
-    res.json({ ok: true, joinCode: joinCode, time: time });
+    res.json({ ok: true, joinCode: joinCode, time: expireDate });
   } catch (error) {
     res.json({ ok: false, error: error.message });
   }

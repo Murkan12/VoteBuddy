@@ -10,6 +10,7 @@ export const Create = ({
   handleNavigate,
   modalMsg,
   setModalMsg,
+  milSecRef,
 }) => {
   const [options, setOptions] = useState([]);
   const [value, setValue] = useState([]);
@@ -48,8 +49,6 @@ export const Create = ({
         if (element !== undefined) optionsSet.add(element);
       });
 
-      console.log(optionsSet);
-
       if (optionsSet.size === 1) {
         setModalMsg(
           "Incorrect number of options! Please enter at least two diffrent options."
@@ -81,8 +80,13 @@ export const Create = ({
             throw new Error(result.error);
           } else {
             const joinCode = result.joinCode;
-            console.log(result.time);
-            const expireTime = result.time;
+
+            const time = new Date(result.time).getTime();
+
+            const expireTime = new Date(
+              time + milSecRef.current
+            ).toLocaleTimeString();
+
             setModalMsg(
               <span>
                 Your vote session Join Code is:{" "}
@@ -180,7 +184,6 @@ export const Create = ({
                         onClick={(e) => {
                           e.preventDefault();
                           handleDelete(comp.id);
-                          // value[index].option = "";
                         }}
                         className="bg-red-500 p-1.5 w-8 rounded-md font-semibold drop-shadow-md transition ease-in-out delay-50 duration-200 hover:bg-red-600 hover:-translate-y-1 hover:scale-110"
                       >

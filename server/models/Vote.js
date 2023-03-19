@@ -10,7 +10,7 @@ const voteSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-voteSchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 });
+voteSchema.index({ createdAt: 1 }, { expireAfterSeconds: 1800 });
 voteSchema.index({ joinCode: 1 });
 
 module.exports = mongoose.model("Votes", voteSchema);

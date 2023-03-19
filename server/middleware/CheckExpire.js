@@ -8,7 +8,7 @@ const checkExpire = async function (req, res, next) {
 
     if (vote) {
       const expireDate = new Date(
-        vote.createdAt.getSeconds() + 60 - new Date().getSeconds()
+        vote.createdAt.getSeconds() + 1800 - new Date().getSeconds()
       );
       if (expireDate && expireDate > 0) {
         req.time = expireDate;

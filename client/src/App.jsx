@@ -1,7 +1,6 @@
 import { Routes, Route, useNavigate } from "react-router-dom";
 
 import { useRef, useState } from "react";
-import { useCookies } from "react-cookie";
 import Cookies from "js-cookie";
 
 import { Header } from "./components/Header";
@@ -16,8 +15,7 @@ function App() {
   const [title, setTitle] = useState("Vote Title");
   const [modalMsg, setModalMsg] = useState("");
   const [time, setTime] = useState("");
-  const [cookies, setCookie, removeCookie] = useCookies();
-  const milSecRef = useRef(60000);
+  const milSecRef = useRef(1800000);
 
   const navigate = useNavigate();
 
@@ -48,12 +46,12 @@ function App() {
       const response = await fetch(`http://localhost:4000/vote/${code}`);
       const result = await response.json();
 
+      setTime("");
+
       const time =
         new Date(result.time).getTime() +
         milSecRef.current -
         new Date().getTime();
-
-      console.log(Cookies.get(code));
 
       if (result.ok && !Cookies.get(code) && time > 0) {
         setVoteOptions(result.options);
@@ -102,6 +100,7 @@ function App() {
               handleNavigate={handleNavigate}
               modalMsg={modalMsg}
               setModalMsg={setModalMsg}
+              milSecRef={milSecRef}
             />
           }
         />
@@ -118,6 +117,7 @@ function App() {
               title={title}
               modalMsg={modalMsg}
               setModalMsg={setModalMsg}
+              milSecRef={milSecRef}
             />
           }
         />
