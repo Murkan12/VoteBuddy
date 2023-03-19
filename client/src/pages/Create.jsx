@@ -17,22 +17,19 @@ export const Create = ({
   const [joinButton, setJoinButton] = useState(null);
 
   useEffect(() => {
-    setTitle("Vote title");
+    setTitle("Vote Title");
   }, []);
 
   function handleDelete(id) {
-    const updatedArr = options.filter((comp) => comp.id !== id);
     const updatedValue = value.filter((element) => element.id !== id);
 
     setValue(updatedValue);
-    setOptions(updatedArr);
   }
 
   function handleAddOption() {
     const randomKey = new Date().getTime();
 
     setValue([...value, { id: randomKey, option: "" }]);
-    setOptions([...options, { id: randomKey }]);
   }
 
   async function handleSubmit(event) {
@@ -67,32 +64,32 @@ export const Create = ({
         optionsSet.forEach((element) => processedOptions.push(element));
 
         try {
-          const response = await fetch("http://localhost:3000/create", {
+          const response = await fetch("http://localhost:4000/create", {
             method: "POST",
-            mode: "cors",
-            cache: "default",
-            credentials: "same-origin",
             headers: {
-              "Content-type": "application/x-www-form-urlencoded",
+              "Content-type": "application/json",
             },
-            body: `options=${JSON.stringify(
-              processedOptions
-            )}&title=${JSON.stringify(title)}`,
+            body: JSON.stringify({
+              options: processedOptions,
+              title: title,
+            }),
           });
+
           const result = await response.json();
 
           if (!result.ok) {
             throw new Error(result.error);
           } else {
-            const joinCode = await result.joinCode;
+            const joinCode = result.joinCode;
             console.log(result.time);
             const expireTime = result.time;
             setModalMsg(
-              `Your vote session Join Code is: ${(
-                <span className="text-green-500 bg-gray-600 p-1 rounded-md">
-                  {joinCode}
-                </span>
-              )}. It will expire at ${expireTime}`
+              <span>
+                Your vote session Join Code is:{" "}
+                <span className="text-green-500 font-semibold">{joinCode}</span>
+                . It will expire at{" "}
+                <span className="text-red-500 font-semibold">{expireTime}</span>
+              </span>
             );
             setJoinButton(
               <button
@@ -103,6 +100,8 @@ export const Create = ({
               </button>
             );
             setIsOpen(true);
+            setTitle("Vote Title");
+            setValue([]);
           }
         } catch (error) {
           setModalMsg(`New error: ${error}`);
@@ -140,11 +139,12 @@ export const Create = ({
               name="title"
               type="text"
               value={title}
+              maxLength="20"
               onChange={(event) => setTitle(event.target.value)}
               className="bg-gray-200 rounded-md p-1 outline-none "
             ></input>
           </div>
-          {options.length > 0 && (
+          {value.length > 0 && (
             <form
               action="http://localhost:3000/create"
               method="POST"
@@ -152,8 +152,8 @@ export const Create = ({
               id="options-form"
               onSubmit={handleSubmit}
             >
-              {options &&
-                options.map((comp, index) => (
+              {value &&
+                value.map((comp, index) => (
                   <div
                     key={comp.id}
                     className="flex mb-4 space-x-4  justify-center items-center last:mb-0 drop-shadow-lg"
@@ -169,9 +169,10 @@ export const Create = ({
                         name="option"
                         className="bg-gray-200 rounded-md p-1 outline-none"
                         autoComplete="off"
-                        value={value[index].option}
+                        value={comp.option}
+                        maxLength="25"
                         onChange={(event) => {
-                          value[index].option = event.target.value;
+                          comp.option = event.target.value;
                           setValue([...value]);
                         }}
                       ></input>
@@ -179,7 +180,7 @@ export const Create = ({
                         onClick={(e) => {
                           e.preventDefault();
                           handleDelete(comp.id);
-                          value[index].option = "";
+                          // value[index].option = "";
                         }}
                         className="bg-red-500 p-1.5 w-8 rounded-md font-semibold drop-shadow-md transition ease-in-out delay-50 duration-200 hover:bg-red-600 hover:-translate-y-1 hover:scale-110"
                       >
@@ -192,12 +193,12 @@ export const Create = ({
           )}
           <div
             className={
-              options.length !== 9 && value.length !== 0
+              value.length !== 9 && value.length !== 0
                 ? "flex justify-between my-3 mx-4"
                 : "flex justify-center my-3 mx-4"
             }
           >
-            {options.length <= 8 && (
+            {value.length <= 8 && (
               <button
                 onClick={handleAddOption}
                 className="bg-orange-600 rounded-md p-2 font-semibold  drop-shadow-md transition ease-in-out delay-50 duration-200 hover:bg-orange-700 hover:-translate-y-1 hover:scale-110"

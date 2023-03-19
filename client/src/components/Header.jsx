@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 export const Header = () => {
   return (
-    <header className="fixed top-0 z-50 flex justify-between items-center md:px-32 min-[420px]:px-16 bg-orange-500 drop-shadow-lg h-12 w-full">
+    <header className="z-50 flex justify-between items-center md:px-32 min-[420px]:px-16 bg-orange-500 drop-shadow-lg h-12 w-full px-4">
       <div className="flex">
         <Link className="text-2xl font-bold drop-shadow-sm" to="/">
           VoteBuddy

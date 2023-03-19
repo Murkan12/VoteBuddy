@@ -1,6 +1,8 @@
 import { Routes, Route, useNavigate } from "react-router-dom";
 
 import { useRef, useState } from "react";
+import { useCookies } from "react-cookie";
+import Cookies from "js-cookie";
 
 import { Header } from "./components/Header";
 import { Home } from "./pages/Home";
@@ -11,9 +13,10 @@ import { Results } from "./pages/Results";
 function App() {
   const [voteOptions, setVoteOptions] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
-  const [title, setTitle] = useState("Vote title");
+  const [title, setTitle] = useState("Vote Title");
   const [modalMsg, setModalMsg] = useState("");
   const [time, setTime] = useState("");
+  const [cookies, setCookie, removeCookie] = useCookies();
   const milSecRef = useRef(60000);
 
   const navigate = useNavigate();
@@ -24,7 +27,7 @@ function App() {
 
   async function handleExpire(joinCode) {
     const response = await fetch(
-      `http://localhost:3000/vote/expire/${joinCode}`
+      `http://localhost:4000/vote/expire/${joinCode}`
     );
     const result = await response.json();
 
@@ -39,22 +42,24 @@ function App() {
 
   async function handleFetch(code) {
     try {
-      const response = await fetch(`http://localhost:3000/vote/${code}`);
+      if (code === "" || undefined)
+        throw new Error("Empty input! Please enter a Join Code.");
+
+      const response = await fetch(`http://localhost:4000/vote/${code}`);
       const result = await response.json();
-      const isValid = sessionStorage.getItem(`${code}`) || true;
 
       const time =
         new Date(result.time).getTime() +
         milSecRef.current -
         new Date().getTime();
 
-      console.log(time);
+      console.log(Cookies.get(code));
 
-      if (result.ok && isValid !== "voteCast" && time > 0) {
+      if (result.ok && !Cookies.get(code) && time > 0) {
         setVoteOptions(result.options);
         setTitle(result.title);
         handleNavigate(`/vote/${result.joinCode}`);
-      } else if (result.ok && isValid === "voteCast" && time > 0) {
+      } else if (result.ok && Cookies.get(code) === "token" && time > 0) {
         setVoteOptions(result.options);
         setTitle(result.title);
         setTime(result.time);
@@ -62,11 +67,11 @@ function App() {
       } else if (result.ok && time <= 0) {
         handleExpire(result.joinCode);
       } else {
-        setModalMsg("Vote not found!");
+        setModalMsg(result.error);
         setIsOpen(true);
       }
     } catch (error) {
-      setModalMsg(`Server error: ${error.message}`);
+      setModalMsg(`New error: ${error.message}`);
       setIsOpen(true);
     }
   }
@@ -111,6 +116,8 @@ function App() {
               handleFetch={handleFetch}
               handleNavigate={handleNavigate}
               title={title}
+              modalMsg={modalMsg}
+              setModalMsg={setModalMsg}
             />
           }
         />

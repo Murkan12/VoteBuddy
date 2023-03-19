@@ -5,6 +5,8 @@ import { TitleBox } from "../components/TitleBox";
 import { ContentContainer } from "../components/ContentContainer";
 import { Modal } from "../components/Modal";
 
+import Cookies from "js-cookie";
+
 export const Vote = ({
   voteOptions,
   handleFetch,
@@ -12,9 +14,11 @@ export const Vote = ({
   setIsOpen,
   handleNavigate,
   title,
+  modalMsg,
+  setModalMsg,
 }) => {
   const [value, setValue] = useState("");
-  const [modalMsg, setModalMsg] = useState("");
+  const [selected, setSelected] = useState(null);
 
   const params = useParams();
   const joinCode = params.joinCode;
@@ -24,12 +28,12 @@ export const Vote = ({
   }, []);
 
   async function handleSubmit() {
-    const response = await fetch(`http://localhost:3000/vote/${joinCode}`, {
+    const response = await fetch(`http://localhost:4000/vote/${joinCode}`, {
       headers: {
         "Content-type": "application/json",
       },
       method: "PATCH",
-      body: JSON.stringify({ json: { option: value, joinCode: joinCode } }),
+      body: JSON.stringify({ option: value }),
     });
     const result = await response.json();
 
@@ -37,7 +41,10 @@ export const Vote = ({
       setModalMsg(result.error || "Server error: vote could not be saved.");
       setIsOpen(true);
     } else {
-      sessionStorage.setItem(`${joinCode}`, "voteCast");
+      Cookies.set(joinCode, "token", {
+        path: "/",
+        expires: new Date(new Date().getTime() + 30 * 60 * 1000),
+      });
       handleNavigate(`results/${joinCode}`);
     }
   }
@@ -61,32 +68,44 @@ export const Vote = ({
       >
         <TitleBox>{title}</TitleBox>
         <ContentContainer>
-          {voteOptions.map((element, index) => {
-            return (
-              <div className="p-4 py-1 my-2 bg-gray-600" key={index}>
-                <input
-                  name={`option`}
-                  type="radio"
-                  className=" accent-orange-500 mr-3"
-                  value={element.option}
-                  onChange={(event) => {
-                    setValue(event.target.value);
-                  }}
-                ></input>
-                <label
-                  htmlFor={`option`}
-                  className="font-semibold text-orange-500"
+          <div className="flex flex-col items-center my-2 p-2">
+            {voteOptions.map((element, index) => {
+              return (
+                <div
+                  className={
+                    selected === index
+                      ? "p-2 my-1 bg-white rounded-md duration-300"
+                      : "p-2 my-1 bg-gray-600 rounded-md"
+                  }
+                  key={index}
                 >
-                  {`${index + 1}. ${element.option}`}
-                </label>
-              </div>
-            );
-          })}
+                  <input
+                    name={`option`}
+                    type="radio"
+                    onClick={() => {
+                      setSelected(index);
+                    }}
+                    className=" checked:accent-orange-500 mr-3"
+                    value={element.option}
+                    onChange={(event) => {
+                      setValue(event.target.value);
+                    }}
+                  ></input>
+                  <label
+                    htmlFor={`option`}
+                    className="font-semibold text-orange-500"
+                  >
+                    {`${index + 1}. ${element.option}`}
+                  </label>
+                </div>
+              );
+            })}
+          </div>
           <div className="flex justify-center mb-4">
             <button
               type="submit"
               disabled={value ? false : true}
-              className="bg-orange-600 rounded-md p-2 font-semibold drop-shadow-md transition ease-in-out duration-200 delay-50 hover:bg-orange-700 enabled:hover:-translate-y-1 enabled:hover:scale-110 disabled:bg-gray-500"
+              className="bg-orange-600 rounded-md mt-2 p-2 font-semibold drop-shadow-md transition ease-in-out duration-200 delay-50 hover:bg-orange-700 enabled:hover:-translate-y-1 enabled:hover:scale-110 disabled:bg-gray-500"
             >
               Post Vote
             </button>
