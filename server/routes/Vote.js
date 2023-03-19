@@ -34,26 +34,7 @@ Router.get("/:joinCode", async (req, res) => {
         time: time,
       });
     } else {
-      res.send({ ok: false });
-    }
-  } catch (error) {
-    res.send(error.message);
-  }
-});
-
-Router.use("/:joinCode", async (req, res, next) => {
-  const joinCode = req.body.json.joinCode;
-
-  const vote = await Votes.findOne({ joinCode: joinCode });
-
-  try {
-    const expireTime =
-      vote.createdAt.getTime() + 60000 - new Date().getTime() || null;
-
-    if (expireTime && expireTime > 0) {
-      next();
-    } else {
-      res.send({ ok: false, error: "Vote expired!" });
+      throw new Error("Vote not found!");
     }
   } catch (error) {
     console.log(error.message);
@@ -61,22 +42,23 @@ Router.use("/:joinCode", async (req, res, next) => {
   }
 });
 
-Router.patch("/:joinCode", async (req, res) => {
-  const option = req.body.json.option;
+Router.patch("/:joinCode", checkExpire, async (req, res) => {
+  const option = req.body.option;
   const joinCode = req.params.joinCode;
 
-  console.log(option);
+  console.log(req.time);
 
   try {
     await Votes.findOneAndUpdate(
       {
+        joinCode: joinCode,
         "options.option": option,
       },
       { $inc: { "options.$.votesNum": 1 } }
     );
 
     io.to(joinCode).emit("vote-updated", "updated");
-    res.send({ ok: true });
+    res.send({ ok: true, time: req.time });
   } catch (error) {
     console.log(error.message);
     res.send({ ok: false });

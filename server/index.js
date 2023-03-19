@@ -9,7 +9,7 @@ const app = express();
 
 app.use(cors());
 
-const PORT = 3000;
+const PORT = 4000;
 
 mongoose.set("strictQuery", false);
 

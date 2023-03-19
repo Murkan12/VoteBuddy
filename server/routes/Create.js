@@ -1,12 +1,15 @@
 const express = require("express");
 const Router = express.Router();
 const Votes = require("../models/Vote");
+const crypto = require("crypto");
 
 Router.post("/", async (req, res) => {
-  // await Votes.deleteMany();
+  const optionsArr = req.body.options;
+  const title = req.body.title;
+  const joinCode = crypto.randomBytes(8).toString("hex").toUpperCase();
 
-  const optionsArr = JSON.parse(req.body.options);
-  const title = JSON.parse(req.body.title);
+  if (optionsArr.length > 9)
+    throw new Error("Server error: Vote options limit crossed!");
 
   console.log(optionsArr);
   const voteArr = optionsArr.map((element) => {
@@ -16,17 +19,15 @@ Router.post("/", async (req, res) => {
   const newVote = new Votes({
     title: title,
     options: voteArr,
+    joinCode: joinCode,
   });
 
   try {
     await newVote.save();
 
-    const createdVote = await Votes.findOne({ options: voteArr });
-    const joinCode = createdVote.joinCode;
+    const date = new Date(newVote.createdAt);
 
-    const date = new Date(createdVote.createdAt);
-
-    date.setTime(createdVote.createdAt.getTime() + 60000);
+    date.setTime(newVote.createdAt.getTime() + 60000);
 
     const time = date.toLocaleTimeString();
 

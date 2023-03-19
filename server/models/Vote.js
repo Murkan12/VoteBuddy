@@ -13,9 +13,4 @@ const voteSchema = new mongoose.Schema(
 voteSchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 });
 voteSchema.index({ joinCode: 1 });
 
-voteSchema.pre("validate", function (next) {
-  this.joinCode = crypto.randomBytes(8).toString("hex").toUpperCase();
-  next();
-});
-
 module.exports = mongoose.model("Votes", voteSchema);
