@@ -5,6 +5,7 @@ const express = require("express");
 const Router = express.Router();
 const Votes = require("../models/Vote");
 const checkExpire = require("../middleware/CheckExpire");
+const { emitUpdated } = require("../server");
 
 Router.get("/:joinCode", async (req, res) => {
   const vote = await Votes.findOne({ joinCode: req.params.joinCode });
@@ -42,7 +43,7 @@ Router.patch("/:joinCode", checkExpire, async (req, res) => {
       { $inc: { "options.$.votesNum": 1 } }
     );
 
-    io.to(joinCode).emit("vote-updated", "updated");
+    emitUpdated();
     res.send({ ok: true, time: req.time });
   } catch (error) {
     console.log(error.message);

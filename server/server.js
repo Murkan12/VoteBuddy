@@ -19,6 +19,10 @@ io.on("connection", (socket) => {
   });
 });
 
+function emitUpdated() {
+  io.to(joinCode).emit("vote-updated", "updated");
+}
+
 connectDb();
 
 mongoose.connection.once("open", () => {
@@ -29,4 +33,4 @@ mongoose.connection.once("open", () => {
   });
 });
 
-module.exports = { server, io };
+module.exports = { emitUpdated };
