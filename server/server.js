@@ -30,4 +30,4 @@ mongoose.connection.once("open", () => {
   });
 });
 
-module.exports = { getSocketInstance };
+module.exports.getSocketInstance = getSocketInstance;
