@@ -137,7 +137,7 @@ export const Create = ({
       <div className="flex flex-col items-center justify-center">
         <TitleBox>Enter up to 9 diffrent options:</TitleBox>
         <ContentContainer>
-          <div className="flex mb-4 space-x-4 pt-4 px-4  justify-center items-center">
+          <div className="flex mb-4 space-x-4 pt-4 px-4 justify-center items-center">
             <label htmlFor="title" className="text-orange-500 font-semibold">
               Enter Vote name:
             </label>
