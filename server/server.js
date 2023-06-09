@@ -1,10 +1,13 @@
 const http = require("http");
 const mongoose = require("mongoose");
+const socketIo = require("socket.io");
 
 const app = require("./app");
 const connectDb = require("./config/connectDb");
 
 const server = http.createServer(app);
+
+const io = socketIo(server);
 
 connectDb();
 
@@ -16,4 +19,4 @@ mongoose.connection.once("open", () => {
   });
 });
 
-module.exports = server;
+module.exports = { server, io };

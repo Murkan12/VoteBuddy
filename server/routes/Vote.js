@@ -5,9 +5,7 @@ const express = require("express");
 const Router = express.Router();
 const Votes = require("../models/Vote");
 const checkExpire = require("../middleware/CheckExpire");
-const server = require("../server");
-
-const io = require("socket.io")(server);
+const { io } = require("../server");
 
 io.on("connection", (socket) => {
   console.log("connected");
