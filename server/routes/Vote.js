@@ -4,25 +4,7 @@ const express = require("express");
 const Router = express.Router();
 const Votes = require("../models/Vote");
 const checkExpire = require("../middleware/CheckExpire");
-
-const io = require("socket.io")(process.env.SOCKET_PORT, {
-  cors: {
-    origin: [
-      "https://votebuddy-api.onrender.com",
-      "https://votebuddy.onrender.com",
-    ],
-    methods: ["GET", "POST"],
-  },
-});
-
-io.on("connection", (socket) => {
-  socket.on("join-room", (room) => {
-    if (room !== undefined) {
-      socket.join(room);
-      console.log("Joined room " + room);
-    }
-  });
-});
+const { getSocketInstance } = require("../config/socketConfig");
 
 Router.get("/:joinCode", async (req, res) => {
   const vote = await Votes.findOne({ joinCode: req.params.joinCode });
@@ -60,6 +42,7 @@ Router.patch("/:joinCode", checkExpire, async (req, res) => {
       { $inc: { "options.$.votesNum": 1 } }
     );
 
+    const io = getSocketInstance();
     io.to(joinCode).emit("vote-updated", "updated");
     res.send({ ok: true, time: req.time });
   } catch (error) {

@@ -63,7 +63,7 @@ export const Create = ({
 
         try {
           const response = await fetch(
-            "https://votebuddy-api.onrender.com/create",
+            "https://votebuddy.onrender.com/create",
             {
               method: "POST",
               headers: {
@@ -137,7 +137,7 @@ export const Create = ({
       <div className="flex flex-col items-center justify-center">
         <TitleBox>Enter up to 9 diffrent options:</TitleBox>
         <ContentContainer>
-          <div className="flex mb-4 space-x-4 pt-4 px-4  justify-center items-center">
+          <div className="flex mb-4 space-x-4 pt-4 px-4 justify-center items-center">
             <label htmlFor="title" className="text-orange-500 font-semibold">
               Enter Vote name:
             </label>
@@ -152,7 +152,7 @@ export const Create = ({
           </div>
           {value.length > 0 && (
             <form
-              action="https://votebuddy-api.onrender.com/create"
+              action="https://votebuddy.onrender.com/create"
               method="POST"
               className="pb-8 pr-8 pl-8 pt-2"
               id="options-form"

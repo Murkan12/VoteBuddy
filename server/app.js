@@ -1,7 +1,7 @@
 require("dotenv").config();
 
+const path = require("path");
 const express = require("express");
-const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
@@ -16,15 +16,16 @@ const voteRouter = require("./routes/Vote");
 
 connectDb();
 
+app.use(express.static(path.join(__dirname, "dist")));
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use("/create", createRouter);
 app.use("/vote", voteRouter);
 
-mongoose.connection.once("open", () => {
-  console.log("Connected to database...");
-  app.listen(process.env.PORT, () => {
-    console.log("Connected to server...");
-  });
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
+
+module.exports = app;
