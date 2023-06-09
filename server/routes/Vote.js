@@ -5,17 +5,6 @@ const express = require("express");
 const Router = express.Router();
 const Votes = require("../models/Vote");
 const checkExpire = require("../middleware/CheckExpire");
-const { io } = require("../server");
-
-io.on("connection", (socket) => {
-  console.log("connected");
-  socket.on("join-room", (room) => {
-    if (room !== undefined) {
-      socket.join(room);
-      console.log("Joined room " + room);
-    }
-  });
-});
 
 Router.get("/:joinCode", async (req, res) => {
   const vote = await Votes.findOne({ joinCode: req.params.joinCode });

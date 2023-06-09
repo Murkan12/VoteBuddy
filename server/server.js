@@ -9,6 +9,16 @@ const server = http.createServer(app);
 
 const io = socketIo(server);
 
+io.on("connection", (socket) => {
+  console.log("connected");
+  socket.on("join-room", (room) => {
+    if (room !== undefined) {
+      socket.join(room);
+      console.log("Joined room " + room);
+    }
+  });
+});
+
 connectDb();
 
 mongoose.connection.once("open", () => {
