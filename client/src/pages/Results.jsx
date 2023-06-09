@@ -24,7 +24,7 @@ export const Results = ({
 
   useEffect(() => {
     handleFetch(joinCode);
-    const socket = io("https://votebuddy.onrender.com:4000");
+    const socket = io("https://votebuddy.onrender.com/results");
     socket.emit("join-room", joinCode);
     socket.on("vote-updated", (msg) => {
       handleFetch(joinCode);

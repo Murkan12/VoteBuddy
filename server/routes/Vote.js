@@ -7,17 +7,10 @@ const Votes = require("../models/Vote");
 const checkExpire = require("../middleware/CheckExpire");
 const server = require("../server");
 
-const io = require("socket.io")(server, {
-  cors: {
-    origin: [
-      "https://votebuddy-api.onrender.com",
-      "https://votebuddy.onrender.com",
-    ],
-    methods: ["GET", "POST"],
-  },
-});
+const io = require("socket.io")(server);
 
 io.on("connection", (socket) => {
+  console.log("connected");
   socket.on("join-room", (room) => {
     if (room !== undefined) {
       socket.join(room);
