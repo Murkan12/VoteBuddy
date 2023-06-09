@@ -23,7 +23,9 @@ export const Header = () => {
         </svg>
       </div>
 
-      <Link className="text-lg font-semibold drop-shadow-sm">Create vote</Link>
+      <Link className="text-lg font-semibold drop-shadow-sm" to="/create">
+        Create vote
+      </Link>
     </header>
   );
 };

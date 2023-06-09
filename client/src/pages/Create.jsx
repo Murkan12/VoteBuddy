@@ -12,7 +12,6 @@ export const Create = ({
   setModalMsg,
   milSecRef,
 }) => {
-  const [options, setOptions] = useState([]);
   const [value, setValue] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
   const [joinButton, setJoinButton] = useState(null);
@@ -63,16 +62,19 @@ export const Create = ({
         optionsSet.forEach((element) => processedOptions.push(element));
 
         try {
-          const response = await fetch("http://localhost:4000/create", {
-            method: "POST",
-            headers: {
-              "Content-type": "application/json",
-            },
-            body: JSON.stringify({
-              options: processedOptions,
-              title: title,
-            }),
-          });
+          const response = await fetch(
+            "https://votebuddy-api.onrender.com/create",
+            {
+              method: "POST",
+              headers: {
+                "Content-type": "application/json",
+              },
+              body: JSON.stringify({
+                options: processedOptions,
+                title: title,
+              }),
+            }
+          );
 
           const result = await response.json();
 
@@ -150,7 +152,7 @@ export const Create = ({
           </div>
           {value.length > 0 && (
             <form
-              action="http://localhost:3000/create"
+              action="https://votebuddy-api.onrender.com/create"
               method="POST"
               className="pb-8 pr-8 pl-8 pt-2"
               id="options-form"

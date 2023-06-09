@@ -5,7 +5,7 @@ const checkExpire = require("../middleware/CheckExpire");
 
 const io = require("socket.io")(8080, {
   cors: {
-    origin: ["http://localhost:3000", "http://localhost:5173"],
+    origin: ["https://votebuddy-api.onrender.com", "http://localhost:5173"],
     methods: ["GET", "POST"],
   },
 });

@@ -6,7 +6,6 @@ import { TitleBox } from "../components/TitleBox";
 
 export const Home = ({
   modalMsg,
-  setModalMsg,
   isOpen,
   setIsOpen,
   handleFetch,

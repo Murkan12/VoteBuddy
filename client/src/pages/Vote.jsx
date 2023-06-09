@@ -29,13 +29,16 @@ export const Vote = ({
   }, []);
 
   async function handleSubmit() {
-    const response = await fetch(`http://localhost:4000/vote/${joinCode}`, {
-      headers: {
-        "Content-type": "application/json",
-      },
-      method: "PATCH",
-      body: JSON.stringify({ option: value }),
-    });
+    const response = await fetch(
+      `https://votebuddy-api.onrender.com/vote/${joinCode}`,
+      {
+        headers: {
+          "Content-type": "application/json",
+        },
+        method: "PATCH",
+        body: JSON.stringify({ option: value }),
+      }
+    );
     const result = await response.json();
 
     if (!result.ok) {

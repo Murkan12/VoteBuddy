@@ -1,4 +1,3 @@
-import { ContentContainer } from "../components/ContentContainer";
 import { Modal } from "../components/Modal";
 import { TitleBox } from "../components/TitleBox";
 import { PieChart } from "../components/PieChart";
@@ -25,7 +24,7 @@ export const Results = ({
 
   useEffect(() => {
     handleFetch(joinCode);
-    const socket = io("http://localhost:8080");
+    const socket = io("https://votebuddy-api.onrender.com");
     socket.emit("join-room", joinCode);
     socket.on("vote-updated", (msg) => {
       handleFetch(joinCode);
