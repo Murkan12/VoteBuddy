@@ -1,11 +1,23 @@
 require("dotenv").config();
 
 const express = require("express");
-
+const socketIO = require("socket.io");
 const Router = express.Router();
 const Votes = require("../models/Vote");
 const checkExpire = require("../middleware/CheckExpire");
-const { emitUpdated } = require("../server");
+const { server } = require("../server");
+
+const io = socketIO(server);
+
+io.on("connection", (socket) => {
+  console.log("connected");
+  socket.on("join-room", (room) => {
+    if (room !== undefined) {
+      socket.join(room);
+      console.log("Joined room " + room);
+    }
+  });
+});
 
 Router.get("/:joinCode", async (req, res) => {
   const vote = await Votes.findOne({ joinCode: req.params.joinCode });
@@ -43,7 +55,7 @@ Router.patch("/:joinCode", checkExpire, async (req, res) => {
       { $inc: { "options.$.votesNum": 1 } }
     );
 
-    emitUpdated();
+    io.to(joinCode).emit("vote-updated", "updated");
     res.send({ ok: true, time: req.time });
   } catch (error) {
     console.log(error.message);

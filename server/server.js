@@ -1,27 +1,10 @@
 const http = require("http");
 const mongoose = require("mongoose");
-const socketIo = require("socket.io");
 
 const app = require("./app");
 const connectDb = require("./config/connectDb");
 
 const server = http.createServer(app);
-
-const io = socketIo(server);
-
-io.on("connection", (socket) => {
-  console.log("connected");
-  socket.on("join-room", (room) => {
-    if (room !== undefined) {
-      socket.join(room);
-      console.log("Joined room " + room);
-    }
-  });
-});
-
-function emitUpdated() {
-  io.to(joinCode).emit("vote-updated", "updated");
-}
 
 connectDb();
 
@@ -33,4 +16,4 @@ mongoose.connection.once("open", () => {
   });
 });
 
-module.exports = { emitUpdated };
+module.exports = { server };
