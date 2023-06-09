@@ -23,7 +23,7 @@ export const Home = ({
         <TitleBox>Create or Join a voting session:</TitleBox>
         <div className="flex justify-center">
           <ContentContainer>
-            <div className="flex flex-col items-center md:flex-row p-12 justify-between h-[230px] md:h-auto md:w-[550px] md:space-x-5 w-[375px]">
+            <div className="flex flex-col items-center md:flex-row p-12 justify-between h-[230px] md:h-auto md:w-[550px] md:space-x-5 w-[330px]">
               <form
                 onSubmit={(event) => {
                   event.preventDefault();
