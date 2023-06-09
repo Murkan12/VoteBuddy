@@ -63,7 +63,7 @@ export const Create = ({
 
         try {
           const response = await fetch(
-            "https://votebuddy-api.onrender.com/create",
+            "https://votebuddy.onrender.com/create",
             {
               method: "POST",
               headers: {
@@ -152,7 +152,7 @@ export const Create = ({
           </div>
           {value.length > 0 && (
             <form
-              action="https://votebuddy-api.onrender.com/create"
+              action="https://votebuddy.onrender.com/create"
               method="POST"
               className="pb-8 pr-8 pl-8 pt-2"
               id="options-form"

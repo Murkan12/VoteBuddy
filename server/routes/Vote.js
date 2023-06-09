@@ -1,11 +1,13 @@
 require("dotenv").config();
 
 const express = require("express");
+
 const Router = express.Router();
 const Votes = require("../models/Vote");
 const checkExpire = require("../middleware/CheckExpire");
+const server = require("../server");
 
-const io = require("socket.io")(process.env.SOCKET_PORT, {
+const io = require("socket.io")(server, {
   cors: {
     origin: [
       "https://votebuddy-api.onrender.com",

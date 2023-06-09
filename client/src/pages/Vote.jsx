@@ -30,7 +30,7 @@ export const Vote = ({
 
   async function handleSubmit() {
     const response = await fetch(
-      `https://votebuddy-api.onrender.com/vote/${joinCode}`,
+      `https://votebuddy.onrender.com/vote/${joinCode}`,
       {
         headers: {
           "Content-type": "application/json",

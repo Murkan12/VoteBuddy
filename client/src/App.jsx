@@ -25,7 +25,7 @@ function App() {
 
   async function handleExpire(joinCode) {
     const response = await fetch(
-      `https://votebuddy-api.onrender.com/vote/expire/${joinCode}`
+      `https://votebuddy.onrender.com/vote/expire/${joinCode}`
     );
     const result = await response.json();
 
@@ -44,7 +44,7 @@ function App() {
         throw new Error("Empty input! Please enter a Join Code.");
 
       const response = await fetch(
-        `https://votebuddy-api.onrender.com/vote/${code}`
+        `https://votebuddy.onrender.com/vote/${code}`
       );
       const result = await response.json();
 
