@@ -28,7 +28,6 @@ export const Results = ({
     socket.emit("join-room", joinCode);
     socket.on("vote-updated", (msg) => {
       handleFetch(joinCode);
-      console.log(msg);
     });
   }, []);
 
