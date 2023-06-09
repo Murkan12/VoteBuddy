@@ -9,7 +9,7 @@ const connectDb = require("./config/connectDb");
 
 const app = express();
 
-app.use(cors({ origin: "https://votebuddy.onrender.com/" }));
+app.use(cors({ origin: "https://votebuddy.onrender.com" }));
 
 const createRouter = require("./routes/Create");
 const voteRouter = require("./routes/Vote");
