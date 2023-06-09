@@ -9,9 +9,7 @@ const connectDb = require("./config/connectDb");
 
 const app = express();
 
-app.use(cors({ origin: "http://localhost:3000", optionsSuccessStatus: 200 }));
-
-const PORT = 4000;
+app.use(cors({ origin: "https://votebuddy.onrender.com/" }));
 
 const createRouter = require("./routes/Create");
 const voteRouter = require("./routes/Vote");
@@ -26,7 +24,7 @@ app.use("/vote", voteRouter);
 
 mongoose.connection.once("open", () => {
   console.log("Connected to database...");
-  app.listen(PORT, () => {
+  app.listen(process.env.PORT, () => {
     console.log("Connected to server...");
   });
 });
