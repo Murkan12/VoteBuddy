@@ -5,29 +5,28 @@ const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 
+const connectDb = require("./config/connectDb");
+
 const app = express();
 
-app.use(cors());
+app.use(cors({ origin: "http://localhost:3000", optionsSuccessStatus: 200 }));
 
-const PORT = 3000;
-
-mongoose.set("strictQuery", false);
+const PORT = 4000;
 
 const createRouter = require("./routes/Create");
+const voteRouter = require("./routes/Vote");
 
-mongoose.connect(process.env.DATABASE_URL);
-
-const db = mongoose.connection;
-db.on("error", (error) => {
-  console.log(error);
-});
-db.once("open", () => console.log("Connected to database..."));
+connectDb();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 app.use("/create", createRouter);
+app.use("/vote", voteRouter);
 
-app.listen(PORT, () => {
-  console.log("Connected to server...");
+mongoose.connection.once("open", () => {
+  console.log("Connected to database...");
+  app.listen(PORT, () => {
+    console.log("Connected to server...");
+  });
 });

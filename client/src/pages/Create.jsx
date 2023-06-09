@@ -2,40 +2,40 @@ import { useState, useEffect } from "react";
 
 import { ContentContainer } from "../components/ContentContainer";
 import { Modal } from "../components/Modal";
+import { TitleBox } from "../components/TitleBox";
 
-export const Create = () => {
-  const [options, setOptions] = useState([]);
+export const Create = ({
+  title,
+  setTitle,
+  handleNavigate,
+  modalMsg,
+  setModalMsg,
+  milSecRef,
+}) => {
   const [value, setValue] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
+  const [joinButton, setJoinButton] = useState(null);
 
   useEffect(() => {
-    handleAddOption();
+    setTitle("Vote Title");
   }, []);
 
   function handleDelete(id) {
-    const updatedArr = options.filter((comp) => comp.id !== id);
     const updatedValue = value.filter((element) => element.id !== id);
 
-    console.log(updatedArr);
     setValue(updatedValue);
-    setOptions(updatedArr);
   }
 
   function handleAddOption() {
     const randomKey = new Date().getTime();
 
     setValue([...value, { id: randomKey, option: "" }]);
-    setOptions([...options, { id: randomKey }]);
-
-    console.log(value);
   }
 
-  function handleSubmit(event) {
+  async function handleSubmit(event) {
     event.preventDefault();
 
     const optionsSet = new Set();
-
-    console.log(value);
 
     if (!value.every((element) => element.option === "")) {
       const optionsArr = value.map(({ option }) => {
@@ -44,39 +44,80 @@ export const Create = () => {
         }
       });
 
-      console.log(optionsArr);
-
       optionsArr.forEach((element) => {
         if (element !== undefined) optionsSet.add(element);
       });
 
       if (optionsSet.size === 1) {
+        setModalMsg(
+          "Incorrect number of options! Please enter at least two diffrent options."
+        );
+        setIsOpen(true);
+      } else if (title === "") {
+        setModalMsg("Please enter a title.");
         setIsOpen(true);
       } else {
         const processedOptions = [];
 
         optionsSet.forEach((element) => processedOptions.push(element));
 
-        console.log(processedOptions);
-
-        fetch("http://localhost:3000/create", {
-          method: "POST",
-          mode: "cors",
-          cache: "default",
-          credentials: "same-origin",
-          headers: {
-            "Content-type": "application/x-www-form-urlencoded",
-          },
-          body: `options=${JSON.stringify(processedOptions)}`,
-        })
-          .then((response) => {
-            if (!response.ok) {
-              throw new Error(`HTTP error ${response.status}`);
+        try {
+          const response = await fetch(
+            "https://votebuddy-api.onrender.com/create",
+            {
+              method: "POST",
+              headers: {
+                "Content-type": "application/json",
+              },
+              body: JSON.stringify({
+                options: processedOptions,
+                title: title,
+              }),
             }
-          })
-          .catch((error) => console.log(error));
+          );
+
+          const result = await response.json();
+
+          if (!result.ok) {
+            throw new Error(result.error);
+          } else {
+            const joinCode = result.joinCode;
+
+            const time = new Date(result.time).getTime();
+
+            const expireTime = new Date(
+              time + milSecRef.current
+            ).toLocaleTimeString();
+
+            setModalMsg(
+              <span>
+                Your vote session Join Code is:{" "}
+                <span className="text-green-500 font-semibold">{joinCode}</span>
+                . It will expire at{" "}
+                <span className="text-red-500 font-semibold">{expireTime}</span>
+              </span>
+            );
+            setJoinButton(
+              <button
+                onClick={() => handleNavigate(`vote/${joinCode}`)}
+                className="bg-green-500 p-1.5 mt-4 rounded-md font-semibold drop-shadow-md transition ease-in-out delay-50 duration-200 hover:bg-green-600 hover:-translate-y-1 hover:scale-110"
+              >
+                Join Vote
+              </button>
+            );
+            setIsOpen(true);
+            setTitle("Vote Title");
+            setValue([]);
+          }
+        } catch (error) {
+          setModalMsg(`New error: ${error}`);
+          setIsOpen(true);
+        }
       }
     } else {
+      setModalMsg(
+        "Incorrect number of options! Please enter at least two diffrent options."
+      );
       setIsOpen(true);
     }
   }
@@ -87,25 +128,38 @@ export const Create = () => {
         open={isOpen}
         onClose={() => {
           setIsOpen(false);
-          console.log(isOpen);
         }}
         isOpen={isOpen}
-      ></Modal>
+        joinButton={joinButton}
+      >
+        {modalMsg}
+      </Modal>
       <div className="flex flex-col items-center justify-center">
-        <h1 className="text-5xl mt-14 font-bold drop-shadow-lg bg-orange-500 inline-block p-2 rounded-md">
-          Enter up to 9 diffrent options:
-        </h1>
+        <TitleBox>Enter up to 9 diffrent options:</TitleBox>
         <ContentContainer>
-          {options.length > 0 && (
+          <div className="flex mb-4 space-x-4 pt-4 px-4  justify-center items-center">
+            <label htmlFor="title" className="text-orange-500 font-semibold">
+              Enter Vote name:
+            </label>
+            <input
+              name="title"
+              type="text"
+              value={title}
+              maxLength="20"
+              onChange={(event) => setTitle(event.target.value)}
+              className="bg-gray-200 rounded-md p-1 outline-none "
+            ></input>
+          </div>
+          {value.length > 0 && (
             <form
-              action="http://localhost:3000/create"
+              action="https://votebuddy-api.onrender.com/create"
               method="POST"
-              className="p-8"
+              className="pb-8 pr-8 pl-8 pt-2"
               id="options-form"
               onSubmit={handleSubmit}
             >
-              {options &&
-                options.map((comp, index) => (
+              {value &&
+                value.map((comp, index) => (
                   <div
                     key={comp.id}
                     className="flex mb-4 space-x-4  justify-center items-center last:mb-0 drop-shadow-lg"
@@ -121,9 +175,10 @@ export const Create = () => {
                         name="option"
                         className="bg-gray-200 rounded-md p-1 outline-none"
                         autoComplete="off"
-                        value={value[index].option}
+                        value={comp.option}
+                        maxLength="25"
                         onChange={(event) => {
-                          value[index].option = event.target.value;
+                          comp.option = event.target.value;
                           setValue([...value]);
                         }}
                       ></input>
@@ -131,7 +186,6 @@ export const Create = () => {
                         onClick={(e) => {
                           e.preventDefault();
                           handleDelete(comp.id);
-                          value[index].option = "";
                         }}
                         className="bg-red-500 p-1.5 w-8 rounded-md font-semibold drop-shadow-md transition ease-in-out delay-50 duration-200 hover:bg-red-600 hover:-translate-y-1 hover:scale-110"
                       >
@@ -144,12 +198,12 @@ export const Create = () => {
           )}
           <div
             className={
-              options.length !== 9 && value.length !== 0
+              value.length !== 9 && value.length !== 0
                 ? "flex justify-between my-3 mx-4"
                 : "flex justify-center my-3 mx-4"
             }
           >
-            {options.length <= 8 && (
+            {value.length <= 8 && (
               <button
                 onClick={handleAddOption}
                 className="bg-orange-600 rounded-md p-2 font-semibold  drop-shadow-md transition ease-in-out delay-50 duration-200 hover:bg-orange-700 hover:-translate-y-1 hover:scale-110"
@@ -161,7 +215,7 @@ export const Create = () => {
               <button
                 type="submit"
                 form="options-form"
-                className="bg-orange-600 font-semibold p-2 rounded-md transition ease-in-out duration-200 delay-50 hover:bg-orange-700 hover:-translate-y-1 hover:scale-110"
+                className="bg-orange-600 drop-shadow-md font-semibold p-2 rounded-md transition ease-in-out duration-200 delay-50 hover:bg-orange-700 hover:-translate-y-1 hover:scale-110"
               >
                 Submit
               </button>
