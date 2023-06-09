@@ -2,24 +2,11 @@ const http = require("http");
 const mongoose = require("mongoose");
 const connectDb = require("./config/connectDb");
 const app = require("./app");
+const { initSocket } = require("./config/socketConfig");
 
 const server = http.createServer(app);
 
-const io = require("socket.io")(server);
-
-io.on("connection", (socket) => {
-  console.log("connected");
-  socket.on("join-room", (room) => {
-    if (room !== undefined) {
-      socket.join(room);
-      console.log("Joined room " + room);
-    }
-  });
-});
-
-function getSocketInstance() {
-  return io;
-}
+initSocket(server);
 
 connectDb();
 mongoose.connection.once("open", () => {
@@ -29,5 +16,3 @@ mongoose.connection.once("open", () => {
     console.log("Connected to server...");
   });
 });
-
-module.exports.getSocketInstance = getSocketInstance;

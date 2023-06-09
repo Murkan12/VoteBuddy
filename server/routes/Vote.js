@@ -4,7 +4,7 @@ const express = require("express");
 const Router = express.Router();
 const Votes = require("../models/Vote");
 const checkExpire = require("../middleware/CheckExpire");
-const { getSocketInstance } = require("../server");
+const { getSocketInstance } = require("../config/socketConfig");
 
 Router.get("/:joinCode", async (req, res) => {
   const vote = await Votes.findOne({ joinCode: req.params.joinCode });
