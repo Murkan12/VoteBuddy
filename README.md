@@ -6,4 +6,3 @@ A simple MERN stack voting application.
 * Sessions automatically expire after 30 minutes and are deleted from the database.
 * Responsive styling done using Tailwind CSS. 
 * Developed with Vite as a development server.
-## Live Demo: https://votebuddy.onrender.com
